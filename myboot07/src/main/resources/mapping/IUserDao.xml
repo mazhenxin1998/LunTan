@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.myboot07.dao.IUserDao">
+
+    <insert id="saveUserByRegister" parameterType="com.example.myboot07.bean.User">
+    insert into user
+    (name,password,account,gmt_creat,avatar_url)
+    values
+    (#{user.name},#{user.password},#{user.account},#{user.gmt_creat},#{user.avatar_url});
+
+    </insert>
+
+    <update id="saveUser"  parameterType="com.example.myboot07.bean.User">
+        insert into user  (account_id,name,token,avatar_url) values(#{user.account_id},#{user.name},#{user.token},#{user.avatar_url});
+    </update>
+
+    <update id="updateUserById" parameterType="com.example.myboot07.bean.User">
+        update user set name = #{user.name}, avatar_url = #{user.avatar_url} where id = #{user.id};
+    </update>
+    <update id="updateUserAvatorUrlByUserId">
+        update user
+        set
+        avatar_url = #{url}
+        where
+        id = #{id};
+    </update>
+
+
+    <select id="queryUserAll" resultType="com.example.myboot07.bean.User">
+        select * from user;
+    </select>
+    <select id="queryUserById" resultType="com.example.myboot07.bean.User">
+        select * from user where account_id = #{id}
+
+    </select>
+    <select id="queryUserByUserId" resultType="com.example.myboot07.bean.User">
+        select * from user where id = #{id}
+    </select>
+
+    <select id="queryUserByToken" resultType="com.example.myboot07.bean.User">
+        select * from  user where  account_id = #{account_Id};
+    </select>
+    <select id="queryUserByAccount" resultType="com.example.myboot07.bean.User">
+        select * from user where account = #{account};
+    </select>
+    <select id="queryUserBycommentator" resultType="com.example.myboot07.bean.User">
+        select * from user
+        where
+        id = #{commentator}
+    </select>
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.example.myboot07.dao.IQussionDao">
+
+
+    <update id="saveQuestion" parameterType="com.example.myboot07.bean.Quession">
+        insert  into quession (title,description,creator,gmt_creat,tag)
+        values
+        (#{quession.title},#{quession.description},#{quession.creator},#{quession.gmt_creat},#{quession.tag});
+    </update>
+
+    <update id="updateQuestion" parameterType="com.example.myboot07.bean.Quession">
+
+        update quession set title=#{quession.title} ,description = #{quession.description}, gmt_modified=#{quession.gmt_modified},
+        tag = #{quession.tag} where id = #{quession.id};
+
+    </update>
+
+    <update id="updateQuestionViewCount">
+        update quession set view_count = view_count+1 where id = #{id};
+    </update>
+
+    <update id="updateQuestionCommentCountById">
+        update quession
+        set
+        comment_count = comment_count+1
+        where id = #{parent_id}
+    </update>
+    <!--     批量增加Tag-->
+    <update id="updateQuestionTag">
+
+    </update>
+    <update id="updateQuestionLikeCount">
+        update quession
+        set
+        like_count = like_count+1
+        where id=#{id}
+    </update>
+
+    <delete id="deleteQuestionById">
+        delete from quession
+        where
+        id = #{id}
+    </delete>
+
+    <select id="queryQuestionAll" resultType="com.example.myboot07.bean.Quession">
+        select *
+        from quession;
+    </select>
+    <select id="queryQuestionPage" resultType="com.example.myboot07.bean.Quession">
+        select *
+        from quession
+        order by gmt_creat DESC
+         limit #{pageno},#{pagesize};
+    </select>
+    <select id="queryQuestionByID" resultType="com.example.myboot07.bean.Quession">
+        select *
+        from quession
+        where
+         id = #{id};
+    </select>
+    <select id="queryQuestionDtoAllByCreator" resultType="com.example.myboot07.bean.Quession">
+        select *
+        from quession
+        where
+        creator = #{id}
+        ORDER BY gmt_creat DESC
+        LIMIT #{starIndex},#{pagesize}
+    </select>
+    <select id="queryMyQuestionSize" resultType="java.lang.Integer">
+        select count(creator) from quession where creator = #{id}
+    </select>
+<!--      只是查出和关键自相互匹配的一页数据 -->
+    <select id="queryQuestionBySearchFunction" resultType="com.example.myboot07.bean.Quession">
+        select *
+        from quession
+        where title like CONCAT("%",#{search},"%")
+        order by gmt_creat DESC
+        LIMIT #{stardIndex},#{pagesize}
+    </select>
+    <select id="queryQuestionAllBySearch" resultType="com.example.myboot07.bean.Quession">
+        select *
+        from quession
+        where title like CONCAT("%",#{search},"%");
+    </select>
+
+
+</mapper>

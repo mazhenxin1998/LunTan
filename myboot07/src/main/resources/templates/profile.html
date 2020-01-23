@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+
+    <script src="webjars/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="webjars/bootstrap/3.4.1/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="webjars/bootstrap/3.4.1/css/bootstrap.css">
+    <script src="webjars/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
+
+
+</head>
+<body>
+<!--   引入导航栏-->
+<div th:insert="~{header :: header}">
+
+</div>
+
+<!--        首页部分 展示评论-->
+
+<div class="container-fluid main mystyle ">
+    <div class="row">
+        <!--         左边 我的提问部分   具体数据-->
+        <div th:if="${mytitle == '我的提问'}" class="col-lg-9 col-md-12 col-xs-12 col-sm-12 ">
+            <h2>
+                <span class="glyphicon glyphicon-list" aria-hidden="true" style="font-size: 26px;"></span>
+                <span th:text="${mytitle}"></span>
+            </h2>
+            <hr>
+            <!-- list不等空,则显示下面的内容 -->
+            <div th:if="${pages.list != null || pages.list.size() != 0}" class="media" th:each="dto:${pages.list}">
+                <div class="media-left">
+                    <a href="#">
+<!--                         src="https://avatars0.githubusercontent.com/u/56750847?v=4"-->
+                        <img class="media-object img-circle imgstyle"
+                             th:src="${dto.user.getAvatar_url()}">
+                    </a>
+                </div>
+                <div class="media-body">
+                    <!--    添加隐藏输入框来获取所要的信息                 问题标题-->
+                    <input type="hidden" id="dto-id" th:value="${dto.getId()}">
+                    <h4 class="media-heading">
+<!--                     doquestion/          该链接应该跳向问题详情页面    -->
+                        <span>
+                             <a href="#" th:href="@{'toUpdateFromIndex/'+${dto.getId()}}">
+                                <p th:text="${dto.title}"></p>
+                            </a>
+                        </span>
+
+                    </h4>
+<!--                    <span th:text="${dto.description}"></span>-->
+                    <span class="text-desc"> <br/>
+                                    • <span th:text="${dto.user.name}"></span> 发起了问题 • <span
+                                th:text="${dto.comment_count}"></span>   个回复 • <span
+                                th:text="${dto.view_count}"></span> 次浏览 • <span
+                                th:text="${dto.gmt_creat}"></span> 发布</span>
+                    <!--                    删除图标-->
+                    <a  style="cursor: pointer;float: right;color: #999" th:onclick="|deleteQuestion(${dto.getId()})|">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+<!--                    修改图标   th:href="@{/toupdate(title = ${dto.getTitle()},description = ${dto.getDescription()},id = ${dto.getId()})}"-->
+                    <a th:href="@{/toupdate(title = ${dto.getTitle()},description = ${dto.getDescription()},id = ${dto.getId()})}" style="cursor: pointer;float: right;color: #999;margin-right: 10px;margin-top: -1px;" th:onclick="|edit()|">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+                </div>
+                <hr>
+            </div>
+            <!--                分页-->
+            <nav th:if="${pages.pageno != null}">
+                <ul class="pagination">
+                    <li>
+                        <a href="#" th:href="@{/dealWithMyQuestion(pageno=${pages.pageno -1},profileName = '我的问题')}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li th:if="${pages.pages != null}" th:each="page0:${pages.pages}" th:class="${pages.pageno == page0}? 'active' : '' ">
+                        <a href="#" th:href="@{/dealWithMyQuestion(pageno=${page0},profileName = '我的问题')}" th:text="${page0}">
+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" aria-label="Next" th:href="@{/dealWithMyQuestion(pageno=${pages.pageno+1},profileName = '我的问题')}">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!--            分页结束-->
+
+        </div>
+
+<!--                左边最新回复部分-->
+        <div th:if="${mytitle == '最新回复'}" class="col-lg-9 col-md-12 col-xs-12 col-sm-12 ">
+            <h2>
+                <span class="glyphicon glyphicon-list" aria-hidden="true" style="font-size: 26px;"></span>
+                <span th:text="${mytitle}"></span>
+            </h2>
+            <hr>
+<!--              要展示为读的的问题   dto被替换为原先的notification-->
+            <div class="media" th:if="${notifiCationDTOS != null || notifiCationDTOS.size() != 0}" th:each="notification:${notifiCationDTOS}">
+<!--                  该头像应该是发出通知的人的头像-->
+                <div class="media-left">
+                    <a href="#">
+                        <img style="margin-top: 11px" class="media-object img-circle imgstyle" src="https://avatars0.githubusercontent.com/u/56750847?v=4"
+                             th:if="${notification.notifierUser != null}"
+                             th:src="${notification.notifierUser.getAvatar_url()}">
+                    </a>
+                </div>
+
+<!--              展示XXX回复了你的问题(回复)XXX     -->
+                <div class="media-body">
+                    <!--    添加隐藏输入框来获取所要的信息                 问题标题-->
+<!--                    <input type="hidden" id="dto-id" th:value="${dto.getId()}">-->
+                    <h4 class="media-heading">
+                        <!--     问题                doquestion/          该链接应该跳向问题详情页面    -->
+                        <span th:if="${notification.getQuestionDTO() != null}">
+                             <a href="#" th:href="@{'toUpdateFromIndex/'+${notification.getQuestionDTO().getId()}}">
+                                <p th:text="${notification.getQuestionDTO().getTitle()}"></p>
+                            </a>
+                        </span>
+<!--                          comment评论      只有当前的通知中的comment不为空时才会显示该条   -->
+                        <span th:if="${notification.getComment() != null}">
+                             <a href="#" th:href="@{'toUpdateFromIndex/'+${notification.getComment().getId()}}">
+                                <p>
+                                    <span th:text="${notification.notifierUser.getName()}"></span>
+                                    <span>回复了你的评论</span>
+                                </p>
+                            </a>
+                        </span>
+
+                    </h4>
+<!--                    <span th:if="${notification.getComment() != null}" th:text="${notification.comment.getComment()}"></span>-->
+<!--                      这里的每个span都应该对两种情况做判断-->
+                    <span class="text-desc"> <br/> </span>
+                                    • <span th:text="${notification.getNotifierUser().getName()}"></span>
+                                      <span>回复了</span>
+                                      <span th:if="${notification.getType() == 1}">问题</span>
+                                      <span th:if="${notification.getType() == 2}">回复</span>
+                                      <span th:if="${notification.questionDTO != null}" th:text="${notification.questionDTO.getDescription()}"></span>
+                                      <span th:if="${notification.comment != null}" th:text="${notification.comment.getComment()}"></span>
+                                      <span>当前状态</span>
+                                      <span th:if="${notification.getStatus() == 0 && notification.getStatus() != null}">未读</span>
+                                      <span th:if="${notification.getStatus() == 1 && notification.getStatus() != null}">已读</span>
+
+                </div>
+                <hr>
+            </div>
+
+            <!--                分页-->
+            <nav th:if="${pages.pageno != null && pages.pages != null}">
+                <ul class="pagination">
+                    <li>
+                        <a href="#" th:href="@{/dealWithMyQuestion(pageno=${pages.pageno -1},profileName = '最新回复')}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li th:each="page0:${pages.pages}" th:class="${pages.pageno == page0}? 'active' : '' ">
+                        <a href="#" th:href="@{/dealWithMyQuestion(pageno=${page0},profileName = '最新回复')}" th:text="${page0}">
+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" aria-label="Next" th:href="@{/dealWithMyQuestion(pageno=${pages.pageno+1},profileName = '最新回复')}">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+<!--    分页结束-->
+
+        </div>
+
+
+        <!--        右侧部分-->
+        <div class="col-lg-3 col-md-12 col-xs-12 col-sm-12 profile">
+            <div class="list-group">
+
+                <a href="/domyquestion?profileName=myquestion" th:href="@{/dealWithMyQuestion(profileName='myquestion')}"
+                   class="list-group-item">
+                    <!--                    span里面的数据是动态展示的-->
+                    <span class="badge" th:text="${myQuestionSize}"></span>
+                    我的提问
+                </a>
+                <!--th:href="@{/domyquestion(profileName='myreply')}"-->
+                <a href="/domyquestion?profileName=myreply" th:href="@{/dealWithMyQuestion(profileName='myreply')}"
+                   class="list-group-item">
+                    <span class="badge" th:text="${unReplySize.get()}"></span>
+                    最新回复
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<!--  删除-->
+<script>
+
+    function deleteQuestion(id) {
+
+        // 删除问题的同时应该把该问题的所有回复删除掉(回复即使不删除  那么也不会显示)
+        layer.confirm("您确定要删除该问题吗?",  {icon: 3, title:'提示'}, function(cindex){
+
+            $.ajax({
+
+                type : "POST",
+                data : {
+                    "id" : id
+                },
+                url : "/deleteQuestion",
+                beforeSend : function () {
+                    return true;
+                },
+                success : function (result) {
+
+                    if (result.success){
+                        //  提示删除成功
+                        layer.msg("删除成功",{time:1500,icon :6,shift:6});
+
+                    }else{
+                        layer.msg("删除失败",{time:1500,icon:5,shift:6});
+                    }
+
+                },
+                error : function () {
+                    layer.msg("服务器内部出现故障了",{time: 1500,icon:5,shift:6});
+                }
+
+            })
+
+
+            layer.close(cindex);
+        }, function(cindex){
+            layer.close(cindex);
+        });
+
+    }
+
+</script>
+
+
+</body>
+</html>

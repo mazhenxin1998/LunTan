@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.example.myboot07.dao.INotifiCationDao">
+
+
+    <insert id="insertNotification" parameterType="com.example.myboot07.bean.NotifiCation">
+        insert into notification
+        (notifier,receiver,outerid,type,gmt_create,status)
+        values
+        (#{notification.notifier},#{notification.receiver},#{notification.outerid},#{notification.type},#{notification.gmt_create},#{notification.status});
+    </insert>
+
+    <update id="updateNotificationStatus">
+        update notification
+        set
+        status =  #{type}
+        where receiver = #{receiver}
+        AND outerid = #{id}
+    </update>
+    <select id="queryNotificationByReceiver" resultType="com.example.myboot07.bean.NotifiCation">
+        select * from
+        notification
+        where
+        receiver = #{id};
+    </select>
+    <select id="queryNotifiCationByViewFunction" resultType="com.example.myboot07.bean.NotifiCation">
+        SELECT * from notification
+        where
+        notifier = #{notifiCation.notifier}
+        AND outerid = #{notifiCation.outerid}
+        AND type = #{notifiCation.type};
+    </select>
+
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.example.myboot07.dao.TextDao" >
+    <!-- useGeneratedKeys="true" keyProperty="id" -->
+
+    <insert id="insertTest"  parameterType="com.example.myboot07.bean.Text">
+        <selectKey resultType="java.lang.Integer" keyProperty="id">
+            select LAST_INSERT_ID()
+
+        </selectKey>
+        insert into test(name) values (#{name});
+
+    </insert>
+</mapper>

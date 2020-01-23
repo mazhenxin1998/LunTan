@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.example.myboot07.dao.ICommentDao">
+
+    <insert id="saveComment" parameterType="com.example.myboot07.bean.Comment" >
+        insert into comment
+        (parent_id,type,commentator,gmt_creat,comment)
+        values
+        (#{cm.parent_id},#{cm.type},#{cm.commentator},#{cm.gmt_creat},#{cm.comment})
+    </insert>
+    <insert id="saveSecondComment">
+        insert into
+        comment
+        (parent_id,type,commentator,gmt_creat,comment)
+        values
+        (#{cm.parent_id},#{cm.type},#{cm.commentator},#{cm.gmt_creat},#{cm.comment});
+    </insert>
+
+    <update id="updateCommentReply">
+        update comment
+        set
+        reply = reply+1
+        where id = #{id}
+    </update>
+    <select id="queryCommentOnePage" resultType="com.example.myboot07.bean.Comment">
+        select * from
+        comment
+        where
+        parent_id = #{id}
+        and type = 1
+        order by gmt_creat ASC ;
+    </select>
+    <select id="querySecondCommentOnePage" resultType="com.example.myboot07.bean.Comment">
+         select * from
+        comment
+        where
+        parent_id = #{id}
+        and type = #{type}
+        order by gmt_creat ASC ;
+    </select>
+    <select id="queryRelatedCommentByTag" resultType="com.example.myboot07.bean.Quession">
+        select * from quession
+        where
+        tag like CONCAT("%",#{tag},"%")
+        order by gmt_creat ASC
+        LIMIT 10;
+
+    </select>
+    <select id="querySecondCommentOneById" resultType="com.example.myboot07.bean.Comment">
+        select * from
+        comment
+        where
+        id = #{parent_id}
+    </select>
+    <select id="queryCommentOneById" resultType="com.example.myboot07.bean.Comment">
+        select * from
+        comment
+        where
+        id = #{outerid};
+    </select>
+</mapper>

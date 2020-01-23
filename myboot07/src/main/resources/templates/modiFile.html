@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${question.getTitle()}"></title>
+
+    <script src="/webjars/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.4.1/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="/webjars/bootstrap/3.4.1/css/bootstrap.css">
+    <script src="/webjars/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
+
+
+</head>
+
+<body>
+<!--   引入导航栏-->
+<div th:insert="~{header :: header}">
+
+</div>
+
+<!--        首页部分 展示评论-->
+
+<div class="container-fluid main modiFile">
+    <div class="row">
+        <!--         左边具体数据-->
+        <div class="col-lg-9 col-md-12 col-xs-12 col-sm-12 ">
+            <h4><span aria-hidden="true" th:text="${question.getTitle()}"></span></h4>
+            <hr>
+
+            <div class="media">
+
+                <div class="media-body">
+                    <!--                    问题标题-->
+
+                    <span th:text="${question.getDescription()}"></span>
+                    <span class="text-desc"> <br/>
+                      |阅读数:<span th:text="${question.getView_count()}"></span> |
+                       发 布 :<span th:text="${question.getGmt_creat()}"></span></span>
+                </div>
+                <hr>
+            </div>
+
+            <div>
+<!--                将id也传送到后台-->
+                <a href="#"
+                   th:href="@{/toupdate(title = ${question.getTitle()},description = ${question.getDescription()},id = ${questionid})}"
+                   class="text-color-999">
+                    <span class="glyphicon glyphicon-pencil text-color-999">编辑</span>
+                </a>
+            </div>
+
+
+        </div>
+
+        <!--        右侧部分-->
+        <div class="col-lg-3 col-md-12 col-xs-12 col-sm-12">
+            <h4>发起人</h4>
+            <hr>
+            <!--            头像+发起人的名称-->
+            <div class="media">
+                <div class="media-left">
+                    <a href="#">
+                        <!--                        头像地址 media-object-->
+                        <img class="media-object img-thumbnail imgstyle" src="#"
+                             th:src="${question.user.getAvatar_url()}">
+                    </a>
+                </div>
+                <div class="media-body">
+                    <h6 class="media-heading" th:text="${question.user.getName()}"></h6>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+</body>
+</html>

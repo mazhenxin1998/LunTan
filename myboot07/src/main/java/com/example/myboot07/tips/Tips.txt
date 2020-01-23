@@ -1,0 +1,27 @@
+1.  抛异常统一在service层抛异常
+2.  GitHub账号的token对应着注册账号的账号
+3.  LoginAndRegisterController 负责注册账户和登录账户
+3.  CommentController  负责评论功能块
+4. 回复功能:
+    a. type == 1 outerid 为当前被评论问题的id
+    b. type == 2 outerid 为当前被回复的id
+
+5.  从铃铛哪里进去问题详情页面  或者是从 最新回复进去 问题详情页面等 都应该将未读状态变为已读状态
+    其次在index页面中如果点击进去 那么也应该将未读状态变为已读状态 应该是三种方式都应该将未读状态
+    变为已读状态
+
+6. 最好将已读状态设置为明显的状态
+
+7. 最新回复和通知后面的数字应该确定为  status为0时的数量 而不是整个  修改两处
+
+
+8. 增加markdown 副文本编辑
+    a. 两个地方需要改
+        第一个： 发布评论的地方---publish 发布问题的页面
+        第二个： 展示评论的地方---问题详情页
+                在问题详情页需要将原来的转换为HTML Code
+    b. 增加上传图片功能
+    c. 增加表情图片功能
+
+9.  修改用户未登录的情况下评论时候的默认图片
+        默认图片地址: http://kaixin-boke.cn-bj.ufileos.com/e7075b6a-d4af-4a84-8456-29ec67e7cf78.png?UCloudPublicKey=dYXxi9C4oL_ydCXr-WpM15hsbq6yZayb_mmvRqva&Signature=ZU0mmKrSBMRdvT5jn2%2BfEP%2BNc%2F8%3D&Expires=1575465926

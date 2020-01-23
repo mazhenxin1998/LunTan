@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>404</title>
+    <!-- Meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <meta name="keywords" content=""
+    />
+    <script type="application/x-javascript">
+        addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); }
+    </script>
+    <!-- Meta tags -->
+    <!-- font-awesome icons -->
+    <link href="/mycss/fontawesome-all.min.css" rel="stylesheet" type="text/css" media="all">
+    <!-- //font-awesome icons -->
+    <!--stylesheets-->
+    <link href="/mycss/style.css" rel='stylesheet' type='text/css' media="all">
+    <!--//style sheet end here-->
+    <link href="http://fonts.googleapis.com/css?family=Nosifer" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Pavanam" rel="stylesheet">
+
+<!--      引入自己的样式-->
+    <link rel="stylesheet" href="/404style.css">
+</head>
+<body>
+<h1 class="error">Domain Error Page</h1>
+<div class="top-w3ls">
+<!--    Sorry Page Not Found-->
+    <h2>404</h2>
+    <h3 style="font-size: 33px"> <span>OOPS..! </span> <span th:text="${message}">Sorry Page Not Found</span></h3>
+    <nav class="border-line">
+        <ul class="nav flex-column">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a href="/" class="nav-link ">About</a>
+            </li>
+            <li class="nav-item">
+                <a href="/" class="nav-link">Error</a>
+            </li>
+            <li class="nav-item">
+                <a href="/" class="nav-link">Contact</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<div class="copyright">
+    <div class="icons">
+        <ul>
+            <li>
+                <a href="/">
+                    <span class="fab fa-facebook-f"></span>
+                </a>
+            </li>
+            <li>
+                <a href="/">
+                    <span class="fab fa-google-plus-g"></span>
+                </a>
+            </li>
+            <li>
+                <a href="/">
+                    <span class="fab fa-twitter"></span>
+                </a>
+            </li>
+            <li>
+                <a href="/">
+                  <span class="fab fa-pinterest-p">
+                  </span></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>问题详情页面</title>
+
+    <script src="../webjars/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../webjars/bootstrap/3.4.1/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="../webjars/bootstrap/3.4.1/css/bootstrap.css">
+    <script src="../webjars/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../style.css">
+    <!--      错的  没有引入进来   -->
+
+    <!--      加载markdown 所需要的外部分拣-->
+    <link rel="stylesheet" href="../editor/css/editormd.preview.css" />
+    <link rel="stylesheet" href="../editor/css/editormd.min.css"/>
+    <script src="../editor/js/editormd.min.js"></script>
+    <script src="/editor/lib/marked.min.js"></script>
+    <script src="/editor/lib/prettify.min.js"></script>
+
+
+</head>
+<body>
+
+
+<!--     由index页面跳转到问题详情页面                     -->
+
+<!--   引入导航栏-->
+<div th:insert="~{header :: header}">
+
+</div>
+
+<!--        首页部分 展示评论-->
+
+<div class="container-fluid main modiFile">
+    <div class="row">
+        <!--         左边具体数据-->
+        <div class="col-lg-9 col-md-12 col-xs-12 col-sm-12 ">
+            <h4> Title: <span aria-hidden="true" th:text="${dto.getTitle()}"></span></h4>
+            <hr>
+            <div class="media">
+
+                <div class="media-body view-photo">
+                    <!--                    问题标题-->
+                    <p> <h4>正 文:</h4> </p>
+
+                    <div id="test-markdown-view">
+                        <textarea style="display:none;" th:text="${dto.getDescription()}"></textarea>
+                    </div>
+                    <!--  markdown-->
+                    <script type="text/javascript">
+                        $(function () {
+                            var testView = editormd.markdownToHTML("test-markdown-view", {});
+                        });
+                    </script>
+                    <hr/>
+
+                    <span class="text-desc"> <br/>
+                        作者:&nbsp; <span th:text="${dto.getUser().getName()}"></span>&nbsp; | &nbsp;
+                       阅读数:<span th:text="${dto.getView_count()}"></span> |&nbsp;
+                       发 &nbsp; 布 :<span th:text="${dto.getGmt_creat()}"></span></span>
+                    <a href="#" style="float: right;color: #999" th:onclick="|addViewCount(${dto.getId()})|">
+                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                        <span th:text="${dto.getLike_count()}">0</span>
+
+                    </a>
+                </div>
+
+            </div>
+            <hr/>
+            <!--              可以直接来个循环-->
+            <span class="label label-info" style="margin-right: 20px;margin-left: 15px" th:each="tag:${tags}">
+
+                <span class="glyphicon glyphicon-tag"></span>
+                <span th:text="${tag}"></span>
+
+            </span>
+
+            <hr/>
+            <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 "
+                 th:if="${session.user != null && dto.getCreator() == session.user.getId()}">
+                <!--   编辑   th:if="${session.user != null && dto.getCreator() == session.user.getId()}"            将id也传送到后台-->
+                <a href="#"
+                   th:href="@{/toupdate(title = ${dto.getTitle()},description = ${dto.getDescription()},id = ${dto.getId()})}"
+                   class="text-color-999">
+                    <span class="glyphicon glyphicon-pencil text-color-999">
+                        编辑
+                    </span>
+                </a>
+                <hr/>
+            </div>
+            <!--                显示有几个回复数字-->
+            <h4 style="margin-left: 10px;margin-bottom: 23px">
+                <span th:text="${dto.getComment_count()}">
+                </span>
+                个回复
+            </h4>
+            <hr/>
+            <!--            回复列表-->
+            <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 " th:if="${commentDTOS != null}"
+                 th:each="comment:${commentDTOS}">
+                <div class="media">
+                    <div class="media-left">
+                        <a href="#">
+                            <img style="margin-top: 14px" class="media-object img-thumbnail imgstyle" src="#"
+                                 th:src="${comment.getUser().getAvatar_url()}">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h6 style="margin-top: 10px" class="media-heading"
+                            th:text="${comment.getUser().getName()}"></h6>
+
+                        <!--                     增加回复内容   -->
+                        <p style="margin-bottom: 6px;margin-top: 8px;" th:text="${comment.getComment()}"></p>
+
+                        <!--                        增加点赞字体图标和回复字体图标-->
+                        <p style="color: #999" class="menu-my">
+                            <a href="#">
+                                <span style="margin-right: 4px" class=" glyphicon glyphicon-thumbs-up "></span>
+                            </a>
+                            <a href="#">
+                                <span style="margin-right: 4px" class="glyphicon glyphicon-thumbs-down"></span>
+                            </a>
+                            <!--                                                                             href 应该是id所对应的每一个元素的ID   -->
+                            <!--   class="btn btn-primary"     data-toggle="collapse" aria-expanded="false"       onclick="collapseComments(this)"               获取到隐藏的参数-->
+                            <input type="hidden" th:value="${comment.getId()}">
+                            <a th:data-id="${comment.getId()}" style="cursor: pointer;"
+                               th:onclick="'javascript:collapseComments(this,\''+${comment.getId()}+'\');'">
+                                <!--                                 回复-->
+                                <span style="margin-right: 4px" class="glyphicon glyphicon-comment"></span>
+                            </a>
+
+                            <span th:if="${comment.getReply() == null}">0</span>
+                            <span th:if="${comment.getReply() != null}" th:text="${comment.getReply()}"></span>
+                            <span style="float: right" th:text="${comment.getGmt_creat()}"></span>
+
+                        </p>
+                        <hr/>
+                        <!--                            二级评论页面-->
+
+
+                        <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 collapse "
+                             style="border: 1px solid #eee;border-radius: 10px"
+                             th:id="${'comment-'+comment.getId()}">
+                            <!--                                 二级回复列表-->
+
+                            <hr/>
+                            <!--                二级回复提交按钮-->
+                            <div>
+                                <h5><p>回 复:</p></h5>
+                                <input th:id="${'input-'+comment.getId()}" type="text"
+                                       class="col-lg-12 col-md-12 col-xs-12 col-sm-12 form-control"
+                                       placeholder="请输入回复内容">
+                                <button type="button" class="btn btn-success"
+                                        style="float: right;    margin-top: 18px;margin-bottom: 16px;"
+                                        th:onclick="'javascript:secondReply(this,\''+${comment.getId()}+'\');'">提 交
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <hr/>
+
+            <!--             增加隐藏内容-->
+            <input type="hidden" id="question_id" th:value="${dto.getId()}">
+
+
+            <!--             当前登录这者回复功能   -->
+
+            <div id="comment_div" class="col-lg-12 col-md-12 col-xs-12 col-sm-12 ">
+                <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 " style="margin-top: 20px">
+                    <div class="media">
+                        <div class="media-left">
+<!--                             这里应该区分默认头像 -->
+                            <a href="#">
+                                <!--                        头像地址 media-object-->
+                                <img th:if="${session.user !=null }" class="media-object img-thumbnail imgstyle" src="#"
+                                     th:src="${session.user.getAvatar_url()}">
+                            </a>
+                            <a href="#">
+                                <!--                        头像地址 media-object-->
+                                <img th:if="${session.user ==null }" class="media-object img-thumbnail imgstyle" src="#" style="font-size: 14px"
+                                     th:src="@{http://kaixin-boke.cn-bj.ufileos.com/583ca948-57c3-44c0-b4d7-8e3fce4fc803.png?UCloudPublicKey=TOKEN_099dc871-5117-4fb4-a669-7785e4cd7805&Signature=2RKa1aB60rqY5fzPh9Msg%2BeltTE%3D&Expires=3402922236}">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h6 th:if="${session.user != null}" style="margin-top: 10px" class="media-heading" th:text="${session.user.getName()}"></h6>
+                            <h6 th:if="${session.user == null}" style="margin-top: 10px" class="media-heading" >游 客</h6>
+
+                        </div>
+                    </div>
+
+                </div>
+                <!--            评论内容-->
+                <div id="editor" class="col-lg-12 col-md-12 col-xs-12 col-sm-12 "
+                     style="margin-top: 15px; margin-bottom: 15px;">
+                    <!--                      当前评论者  评论的内容     应该也变成markdown副文本编辑-->
+                    <textarea id="comment" style="display: none" class="form-control" rows="6"></textarea>
+                </div>
+                <script type="text/javascript">
+                    $(function () {
+                        var editor = editormd("editor", {
+                            width: "100%",
+                            height: "300px",
+                            watch: false,
+                            emoji : true,
+                            imageUpload    : true,
+                            imageFormats   : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                            // 该路径是一个图片上传的Controller路径
+                            imageUploadURL : "/fileUpdate",
+                            path: "../editor/lib/"  // Autoload modules mode, codemirror, marked... dependents libs path
+                        });
+                    });
+                </script>
+                <!--                     提交回复按钮-->
+                <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 ">
+                    <button onclick="Reply()" type="button" class="btn btn-success" style="float: right;
+                                                                      margin-top: 5px;
+                                                                      margin-bottom: 10px;">
+                        回 复
+                    </button>
+                </div>
+                <input type="hidden" id="question-id" th:value="${dto.getId()}">
+            </div>
+        </div>
+
+        <!--        右侧部分-->
+        <div class="col-lg-3 col-md-12 col-xs-12 col-sm-12">
+            <h4>发起人</h4>
+            <hr>
+            <!--            头像+发起人的名称-->
+            <div class="media">
+                <div class="media-left">
+                    <a href="#">
+                        <!--                        头像地址 media-object-->
+                        <img class="media-object img-thumbnail imgstyle" src="#"
+                             th:src="${dto.user.getAvatar_url()}">
+                    </a>
+                </div>
+                <div class="media-body">
+                    <h6 style="margin-top: 2px" class="media-heading" th:text="${dto.user.getName()}"></h6>
+                </div>
+            </div>
+
+            <!--              处理图片广告-->
+            <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12" style="margin-top: 26px">
+                <h4 style="text-align: center">加好友,一起学习打卡呀!!!</h4>
+                <img src="/editor/images/wx.jpg" style="width: 100%">
+            </div>
+            <!--              处理相关问题-->
+            <div th:if="${relatedQuestion != null}" class="col-lg-12 col-md-12 col-xs-12 col-sm-12 relateQuestion"
+                 style="margin-top: 54px;">
+                <br/>
+                <h5><p>相关问题!</p></h5>
+                <hr/>
+                <!--                    相关问题应该把当前页数上的问题去除掉-->
+                <!--                 循环展示  和标签所有相关的-->
+                <p class="relateQuestion" th:each="question:${relatedQuestion}">
+                    <a href="#" th:href="@{'/toUpdateFromIndex/'+${question.getId()}}">
+                        <span th:text="${question.getTitle()}"></span>
+                    </a>
+                    <br/>
+                <hr/>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script src="/js/layer/layer.js"></script>
+
+
+<!--增加点赞数对问题-->
+<script>
+
+    function addViewCount(id) {
+
+        $.ajax({
+
+            type: "POST",
+            data: {
+                "id": id
+            },
+            url: "/updateViewCount",
+            beforeSend: function () {
+                return true;
+            },
+            success: function (result) {
+
+                if (result.success) {
+                    // 对点赞图标增加样式
+
+                } else {
+                    layer.msg("点赞失败,请稍后重试!", {time: 1500, icon: 5, shift: 6});
+                }
+
+            },
+            error: function () {
+                alert("服务器故障");
+            }
+
+
+        })
+
+
+    }
+
+</script>
+
+<!-- ajax提交一级回复  -->
+<script>
+    function Reply() {
+
+        // 定义全局变量
+        var parent_id = $("#question-id").val();
+        var comment = $("#comment").val();
+        var type = "1";   // 默认是1 既对父类问题的回复
+
+        $.ajax({
+
+            type: "POST",
+            url: "/commentUpdate",
+            data: {
+                "parent_id": parent_id,
+                "comment": comment,
+                "type": type
+            },
+            beforeSend: function () {
+
+                if (comment == "" || comment == null) {
+                    layer.msg("评论内容不能为空,请您先输入评论内容!", {time: 1500, icon: 5, shift: 6});
+                    return false;
+                } else {
+                    return true;
+                }
+
+            },
+            success: function (result) {
+                // 从result中获取数据
+                var code = result.code;
+                var message = result.message;
+
+                // 对正常进行回复
+                if (code == 200) {
+
+                    layer.msg("回复成功!", {time: 1000, icon: 6, shift: 6});
+                    window.location.reload();
+                }
+
+                if (code == 2012) {
+                    layer.msg(message, {time: 1500, icon: 5, shift: 6});
+                }
+                if (code == 2017) {
+                    // 该情况应该不会发生 -----service层如果发生则会向外抛出异常 直接映射到error页面
+                    layer.msg(message, {time: 1500, icon: 5, shift: 6});
+                }
+            },
+            error: function () {
+                layer.msg("呀!  发表评论失败了,请稍后尝试!", {time: 1500, icon: 5, shift: 6});
+            }
+
+        })
+
+
+    }
+
+
+</script>
+
+<!--  展开(查询)二级页面-->
+<script>
+
+    function collapseComments(e, parent_id) {
+
+        var parent_id = parent_id;
+        var id = e.getAttribute("data-id");
+        var comment = $("#comment-" + id);
+        var s = e.getAttribute("data-collapse");
+        // s 不空说明二级页面已经展开
+        if (s != null) {
+            comment.removeClass("in");
+            e.removeAttribute("data-collapse");
+        } else {
+            var question_id = $("#question_id").val();
+
+            $.getJSON("/secondComment/" + parent_id, function (data) {
+                console.log(data);
+                var one = data;
+                // var name = one[1].comment;
+                // //alert(name);
+                var contain = "";
+                var subCommentContain = $("#comment-" + id);
+                $.each(one, function (i, n) {
+                    var text = n.comment;
+                    var photo = n.user.avatar_url;
+                    var name = n.user.name;
+                    contain += '<div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">';
+                    contain += '<div class="media">';
+                    contain += '<div class="media-left">';
+                    contain += '<a href="#">';
+                    contain += '<img src="' + photo + '" style="margin-top: 9px;float: left" class="media-object img-thumbnail imgstyle">';
+                    contain += '</a>';
+                    contain += '<div class="media-body">';
+                    contain += '<h6 style="margin-top: 10px" class="media-heading">';
+                    contain += '' + name + '';   // 回复者的姓名
+                    contain += '<span>';
+                    contain += '  &nbsp;  回复:';
+                    contain += '</span>';
+                    contain += '</h6>';
+                    // p 是内容  如果要用markdown来展示,那么应该在这里拼接成一个div里面包含着一个文本域
+                    contain += '<p style="margin-bottom: 6px;margin-top: 8px;margin-left: 50px" >';
+                    contain += '' + text + '';
+                    contain += '</p>';
+                    contain += '<hr>';
+                    contain += '</div>';
+                    contain += '</div>';
+                    contain += '</div>';
+                    contain += '</div>';
+
+                })
+                subCommentContain.prepend(contain);
+            })
+            comment.addClass("in");
+            e.setAttribute("data-collapse", "in");
+        }
+    }
+
+    //   对问题的二级回复
+    function secondReply(e, parent_id) {
+        // 获取全局变量
+        var id = parent_id;
+        var comment = $("#input-" + id).val();
+        //alert("测试回复内容:"+comment)
+        var type = 2;  // 默认对二级页面进行回复的comment设置为2
+        $.ajax({
+            type: "POST",
+            data: {
+                "id": id,
+                "secondComment": comment,
+                "type": type
+            },
+            url: "/saveSecondComment",
+            beforeSend: function () {
+                return true;
+            },
+            success: function (result) {
+
+                var isLogin = result.isLogin;
+                if (result.success) {
+                    layer.msg("回复成功,请刷新页面来查看刚回复的问题!", {time: 1500, icon: 6, shift: 6});
+                } else {
+                    if (isLogin) {
+                    } else {
+                        layer.msg("请先登录,再来回复!", {time: 1500, icon: 5, shift: 6});
+                    }
+                }
+            },
+            error: function () {
+                alert("服务器内部出现故障了,请稍后访问!!");
+            }
+        })
+    }
+</script>
+
+
+</body>
+</html>

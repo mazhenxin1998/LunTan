@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <link rel="stylesheet" href="/style.css">
+    <script src="../js/layer/layer.js"></script>
+
+
+</head>
+<body>
+<div th:fragment="header">
+
+    <!--
+        copy内容-->
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">开心博客园</span>
+                </button>
+                <a class="navbar-brand" href="/">开心博客园</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                        <input id="search" type="text" class="form-control" placeholder="搜索问题...">
+                    </div>
+<!--                    <button onclick="searchFunction()"  type="submit" class="btn btn-default">搜索</button>-->
+                </form>
+<!--                  测试   -->
+                <button onclick="searchFunction()"  type="submit" class="btn btn-default" style="margin-top: 8px;margin-left: -10px">搜索</button>
+                <ul class="nav navbar-nav navbar-right">
+                    <!--                    th:if  当表达式的值为true的时候 执行-->
+                    <!--                        <li th:if="${session.user == null}"><a href="#"-->
+                    <!--                                                               th:href="@{https://github.com/login/oauth/authorize?client_id=162575788251fb2fb193&redirect=http://localhost:8080/callback&scope=user&state=1}">登录</a>-->
+
+
+                    <li th:if="${session.user == null}" data-toggle="modal" data-target="#myModal0">
+                        <a href="#">
+                            登录
+                        </a>
+                    </li>
+                    <li th:if="${session.user == null}" data-toggle="modal" data-target="#myModal">
+                        <a href="#">
+                            注册
+                        </a>
+                    </li>
+                    <!--                   th:unless   当表达式的值为false时  执行-->
+                    <li class="navbar-link" th:if="${session.user != null}">
+                        <a href="#" data-toggle="modal" data-target="#myModal2">
+                            <span style="font-size: 19px;" class="glyphicon glyphicon-bell"></span>
+<!--                              加个显示通知-->
+                        </a>
+                    </li>
+                    <li class="navbar-link" th:if=" ${session.user != null}">
+                        <a href="/publish"> 提 问</a>
+                    </li>
+
+                    <li class="dropdown" th:unless="not ${session.user != null}">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false"> <span th:text="${session.user.getName()}"></span> <span
+                                class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#"
+                                   th:href="@{/dealWithMyQuestion(profileName='myquestion',pageno='1',pagesize='7')}">我的问题</a>
+                            </li>
+                            <li><a href="/toPersonCenter">个人中心</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#" th:href="@{/logout}">退 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;出</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!--    我认为是通过data-toggle='modal' data-target来引用   <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">开始演示模态框</button> -->
+
+    <!--    创建弹出框  需要加入引用-->
+    <div class="modal fade" id="myModal0" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="myModalLabel" style="text-align: center">请输入账号和密码，进行登录</h4>
+                            </div>
+                            <div class="modal-body" style="text-align: center">
+
+                                <!--                       表单登录开始 (登录表单)    -->
+                                <form class="form-horizontal " role="form" action="/dealWithLogin" method="post">
+                                    <div class="form-group" style="margin-left: 60px">
+                                        <label for="firstname" class="col-sm-2 control-label" style="margin-top: 10px">账号</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="account" class="form-control" id="firstname"
+                                                   style="width: 250px;height: 50px"
+                                                   placeholder="请输入您的账号">
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-top: 30px;margin-left: 60px">
+                                        <label for="lastname" class="col-sm-2 control-label" style="margin-top: 8px">密码</label>
+                                        <div class="col-sm-10">
+                                            <input type="password" class="form-control" id="lastname" name="password"
+                                                   style="width: 250px; height: 50px"
+                                                   placeholder="请输入您的密码">
+                                        </div>
+                                    </div>
+
+                                </form>
+                                <!--                     登录按钮-->
+                                <div class="form-group" style="margin-top: 5px">
+                                    <button th:onclick="|login()|" class="btn btn-default" style="margin-top: 20px">点我登录</button>
+                                </div>
+
+                                <div class="form-group" style="margin-right: -269px">
+                                    <div class="col-sm-offset-2 col-sm-10" style="margin-right: 0">
+                                <span>
+                                    <a href="#" data-toggle="modal" data-target="#myModal">
+                                        没有账号？点我注册
+                                    </a>
+                                </span>
+                                    </div>
+                                </div>
+
+                    <!--                       表单登录结束     -->
+
+                    <!--                    分界线 来提示第三方登录-->
+                    <div class="form-group" style="margin-top: 50px;">
+                        <hr />
+                        <h4 style="text-align: center">使用第三方进行登录</h4>
+<!--                         GitHub-->
+                        <a href="#" th:href="@{https://github.com/login/oauth/authorize?client_id=162575788251fb2fb193&redirect=
+                                    http://localhost:8080/callback&scope=user&state=1}">GitHub</a>
+<!--                         QQ-->
+                        <a href="" th:href="@{https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=101836470&redirect_uri=http://localhost:8080/qqCallBack&state=1&scope=get_user_info}">QQ</a>
+<!--                        微信-->
+                        <a href="#">WeChat</a>
+<!--                        <a href="/qqAuth" >QQ</a>-->
+<!--                        &lt;!&ndash;                        微信&ndash;&gt;-->
+<!--                        <a href="#">WeChat</a>-->
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <!--                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>-->
+
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关 &nbsp;&nbsp;闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--    注册账号-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel" style="text-align: center">请注册账号:</h4>
+                </div>
+                <div class="modal-body">
+
+                    <!--                    表单开始  (注册)    -->
+
+                    <form class="form-horizontal " role="form">
+                        <div class="form-group">
+                            <label for="account" class="col-sm-2 control-label" style="margin-top: 10px">注册账号:</label>
+                            <div class="col-sm-10">
+                                <input name="account" type="text" class="form-control" id="account"
+                                       style="width: 250px;height: 50px"
+                                       placeholder="请注册您的账号">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 30px;">
+                            <label for="pswd" class="col-sm-2 control-label" style="margin-top: 8px">您的密码</label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" id="pswd" name="pswd"
+                                       style="width: 250px; height: 50px"
+                                       placeholder="请输入您的密码">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 30px">
+                            <label for="name" class="col-sm-2 control-label" style="margin-top: 10px">用 户 名:</label>
+                            <div class="col-sm-10">
+                                <input name="name" type="text" class="form-control" id="name"
+                                       style="width: 250px;height: 50px"
+                                       placeholder="请注册您的用户名">
+                            </div>
+                        </div>
+                    </form>
+
+                    <!--                     表单结束-->
+
+                </div>
+                <div class="modal-footer">
+                    <!--                    <button type="button" class="btn btn-default" data-dismiss="modal"></button>-->
+                    <button onclick="Register()" type="button" class="btn btn-primary">注 &nbsp;册</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--     模态框  系统消息 -->
+    <div class="modal fade" id="myModal2">
+        <div class="modal-dialog">
+            <div class="modal-content">
+<!--                 显示标题-->
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+<!--                    <h4 style="text-align: center" class="modal-title">系统消息:</h4>-->
+
+                    <div>
+
+                        <!-- Nav tabs   将点赞和关注放到一起  结合成动态  -->
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">通知<span class="badge" style="margin-left: 5px;margin-top: -2px;background-color: crimson;color: white" th:text="${session.unreadSize.get()}" th:if="${session.unreadSize != null}">
+                            </span></a></li>
+                            <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">动态</a></li>
+                            <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">浏览</a></li>
+                            <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">消息</a></li>
+                        </ul>
+                        <!--   每个列表的主要内容 -->
+                        <div class="tab-content" style="margin-top: 10px;" >
+
+                            <div role="tabpanel" class="tab-pane active" id="home" style="overflow-y: scroll;height: 190px">
+<!--                                 循环内部p  class="col-lg-12 col-md-12 col-xs-12 col-sm-12 " -->
+<!--                                  这个P 是展示XXX回复了问题-->
+                                    <p  th:each="notification:${session.notificationQuestion}" th:if="${session.notificationQuestion != null}">
+                                        <a href="#">
+                                            <span th:text="${notification.notifierUser.name}">XXX</span>
+                                        </a>
+                                        <span>回复了你的</span>
+                                        <span>问题 </span>
+<!--                                          该链接应该跳转到指定的页面(详细页面)-->
+                                        <a href="#" th:href="${'/toUpdateFromIndex/'+notification.questionDTO.getId()}">
+                                            <span th:text="${notification.questionDTO.title}"></span>
+                                        </a>
+                                    </p>
+
+<!--                                这个P展示XXX回复了我的回复-->
+                                    <p  th:each="notification:${session.notificationComment}" th:if="${session.notificationComment != null }">
+                                        <a href="#">
+                                            <span th:text="${notification.notifierUser.name}">XXX</span>
+                                        </a>
+                                        <span>回复了你的</span>
+                                        <span>问题 </span>
+                                        <a href="#">
+                                            <span th:text="${notification.comment.comment}"></span>
+                                        </a>
+                                    </p>
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane" id="profile">
+                                当前共有几个人为你点赞  <br />
+<!--                                <a href="#">XXX <span>给你点了个赞</span> </a>      时间XXXX-XX-XX XX XX XX  -->
+                                <span> <a href="#">XXX</a>给你点了个赞    时间XXXX-XX-XX XX XX XX </span>
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane" id="messages">
+                                有XXX人浏览了你的XXX问题
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane" id="settings">
+                               对于首次登陆的用户,应该先给他来个 <br>
+                                欢迎语句
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+    <!--     引入layer弹层组件-->
+    <script src="js/layer/layer.js"></script>
+<!--   注册  -->
+    <script>
+
+        function Register() {
+
+            var account = $("#account").val();
+            var password = $("#pswd").val();
+            var name = $("#name").val();
+
+            var index = -1;
+            $.ajax({
+
+                type: "POST",
+                data: {
+                    "account": account,
+                    "password": password,
+                    "name": name
+                },
+                url: "/dealWithRegister",
+
+                beforeSend: function () {
+
+                    if (account == "" || account == null) {
+                        layer.msg("账号不能为空,请输入您的账号!", {time: 1500, icon: 5, shift: 6});
+                        return false;
+                    }
+                    if (password == "" || password == null) {
+                        layer.msg("密码不能为空,请重新输入您的密码!", {time: 1500, icon: 5, shift: 6});
+                        return false;
+                    }
+                    if (name == null || name == "") {
+                        layer.msg("用户名不能为空,请重新输入您的用户名!", {time: 1500, icon: 5, shift: 6});
+                        return false;
+                    }
+                    index = layer.load(2, {time: 10 * 1000});
+
+                    return true;
+                },
+                success: function (result) {
+
+                    layer.close(index);
+
+                    if (result.success) {
+                        //  注册成功，跳转到首页
+                        window.location.href = "/";
+                    } else {
+                        //  注册失败不回调 仍停留在该页面进行第二次注册
+                        // 根据状态码来确定不能注册的原因
+                        if (result.code == 2013) {
+                            layer.msg("注册失败,当前账户" + account + "已经被注册了", {time: 1000, icon: 5, shift: 6});
+                        }
+                    }
+                },
+                error: function () {
+                    alert("系统异常!");
+                }
+            })
+        }
+
+
+    </script>
+
+<!--      登录 -->
+    <script>
+
+        function login() {
+
+            //String account, String password,
+            var account = $("#firstname").val();
+            var password = $("#lastname").val();
+            var index = -1;
+            $.ajax({
+                type : "POST",
+                data : {
+                    "account" : account,
+                    "password" : password
+                },
+                url : "/dealWithLogin",
+                beforeSend : function () {
+
+                    if (account == null || account == ""){
+                        layer.msg("账号不能为空,请输入后再来登录",{time : 1500,icon : 5, shift : 6});
+                        return false;
+                    }
+                    if (password == null || password == ""){
+                        layer.msg("密码不能为空,请输入密码后再来登录",{time : 1500,icon : 5,shift : 6});
+                        return false;
+                    }
+                    index = layer.load(2, {time: 10*1000});
+                    return true;
+                },
+                success : function (result) {
+                    layer.close(index);
+                    if (result.success){
+                        // 登录成功之后跳转到首页
+                        window.location.href="/";
+                    }else{
+                        layer.msg("对不起,账号或密码错误,请重新输入",{time: 1500,icon : 5,shift : 6});
+                    }
+
+                },
+                error : function () {
+                    alert("当前服务器已经暂时关闭,具体开服时间请留意官网")
+                }
+
+            })
+
+        }
+
+    </script>
+
+<!--      搜索 -->
+    <script>
+
+        function searchFunction() {
+
+            var search = $("#search").val();
+            layer.load(2,{time :1*1000})
+            window.location.href="/searchFunction?search="+search+"&pageno="+1+"&pagesize="+7;
+
+        }
+
+    </script>
+
+</div>
+</body>
+</html>

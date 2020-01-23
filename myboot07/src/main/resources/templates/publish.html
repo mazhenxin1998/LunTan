@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>开心博客园-发布问题</title>
+
+    <script src="webjars/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="webjars/bootstrap/3.4.1/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="webjars/bootstrap/3.4.1/css/bootstrap.css">
+
+    <script src="webjars/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="../js/layer/layer.js"></script>
+
+    <link rel="stylesheet" href="../editor/css/editormd.min.css">
+    <script src="../editor/js/editormd.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
+
+
+</head>
+<body>
+<!--   引入导航栏-->
+<!--<div>-->
+<div th:insert="~{header :: header}">
+</div>
+<div class="container-fluid main mystyle">
+    <div class="row">
+        <!--        左边部分-->
+        <div class="col-lg-9 col-md-12 col-xs-12 col-sm-12 ">
+            <h2><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></h2>
+            <hr>
+            <form id="form-me">
+
+                <div class="form-group">
+                    <label for="title">问题标题 (简单扼要)...</label>
+                    <input type="text" name="title" class="form-control" id="title" placeholder="问题标题...."
+                           th:value="${title}">
+                </div>
+                <!--                  将该div换成  markdown  的格式-->
+                <div class="form-group" id="editor" >
+                    <label for="title">问题补充 (必填，请参考右边选项).....</label>
+                    <textarea style="display: none" id="description" name="description" class="form-control" rows="10"
+                              placeholder="问题补充..."></textarea>
+                </div>
+
+                <!--                选择标签-->
+                <div class="form-group">
+                    <label for="tag">添加标签:</label>
+                    <input name="tag" type="text" class="form-control" id="tag" placeholder="请输入问题标签(多余的标签请以,号隔开)....">
+                </div>
+
+                <div class="container-fluid main">
+                    <!--                      按钮和提示框-->
+                    <div class="row" style="float:right">
+                        <!--                        按钮-->
+                        <div class="col-lg-3 col-md-12 col-xs-12 col-sm-12">
+                            <!--                            <input  type="submit" onclick="releaseQuestion()" class="btn btn-success btn-publish" value="发 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;布">-->
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <button onclick="releaseQuestion()" style="margin-top: -64px" class="btn btn-success btn-publish">发 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;布</button>
+
+        </div>
+
+        <!--   右侧     发起指南描述-->
+        <div class="col-lg-3 col-md-12 col-xs-12 col-sm-12">
+            <h3>问题发起指南</h3>
+            • 问题标题: 请用精简的语言描述您发布的问题，不超过25字 <br>
+            <hr>
+            • 问题补充: 详细补充您的问题内容，并确保问题描述清晰直观, 并提供一些相关的资料：<br>
+            <hr>
+            • 选择标签: 选择一个或者多个合适的标签，不超过10个字 <br>
+            <hr>
+            • 标签要求:不能含有非法字符 <br>
+            <hr>
+        </div>
+    </div>
+</div>
+
+<!--  发布问题 -->
+<script>
+    // 发布问题
+    function releaseQuestion() {
+
+        var title = $("#title").val();
+        var description = $("#description").val();
+        var tag = $("#tag").val();
+        var index = -1;
+        $.ajax({
+
+            type: "POST",
+            data: {
+                "title": title,
+                "description": description,
+                "tag": tag
+            },
+            url: "/doquestion",
+
+            beforeSend: function () {
+
+                if (title == "" || title == null) {
+                    layer.msg("问题标题不能为空,请输入问题标题之后再来发布评论!", {time: 1500, icon: 5, shift: 6});
+                    return false;
+                }
+
+                if (description == "" || description == null) {
+                    layer.msg("问题描述不能为空,请输入问题描述之后再来发布评论!", {time: 1500, icon: 5, shift: 6});
+                    return false;
+                }
+
+                if (tag == null || tag == "") {
+                    layer.msg("问题标签不能为空,请输入问题标签之后再来发布评论!", {time: 1500, icon: 5, shift: 6});
+                    return false;
+                }
+
+                if (tag.search("，") != -1) {
+                    layer.msg("标签中不能含有非法字符,请更正后再来发布评论!", {time: 1500, icon: 5, shift: 6});
+                    return false;
+                }
+
+                index = layer.load(2, {time: 10 * 1000});
+
+                return true;
+            },
+            success: function (result) {
+
+                layer.close(index);
+                var code = result.code;
+                if (result.success) {
+                    layer.msg("恭喜!   提问问题成功!", {time: 1500, icon: 6, shift: 6});
+                } else {
+                    if(code == "3001"){
+
+                        layer.msg("发布问题失败,错误代码:3001");
+                    }
+
+                    layer.msg("发布问题失败,请检查要发布的所有信息之后重试!", {time: 1500, icon: 5, shift: 6});
+                }
+            },
+            error: function () {
+                alert("系统异常!");
+            }
+        })
+
+
+    }
+
+</script>
+
+<!--  处理markdown 发布问题 的markdown配置js-->
+<script type="text/javascript">
+    $(function () {
+        var editor = editormd("editor", {
+            width: "100%",
+            height: "350px",
+            delay : 0,
+            imageUpload    : true,
+            imageFormats   : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL : "/fileUpdate",
+            emoji : true,
+            path: "../editor/lib/"  //   自动加载模块模式，codemirror，标记…家属库路径  以后需要的东西全在该路径下面找(前提是没有特别的引入)默认加载路径
+        });
+    });
+</script>
+
+
+</body>
+</html>

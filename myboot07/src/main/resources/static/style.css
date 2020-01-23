@@ -1,0 +1,76 @@
+body{
+    background-color: #efefef;
+    background-image: url("editor/images/HeiBanBj.jpg");
+
+}
+a{
+    text-decoration: none;
+}
+.main{
+    margin: 60px;
+    background-color: white;
+}
+
+.btn-publish{
+    float: right;
+    margin-bottom: 15px;
+}
+.imgstyle{
+    width: 40px;
+    height: 38px;
+}
+.text-desc{
+    font-size: 12px;
+    font-weight: normal;
+    color: #999;
+}
+.profile {
+    margin-top: 50px;
+}
+.modiFile{
+    margin: 60px;
+    background-color: white;
+}
+.img-thumbnail{
+    max-width: 40px;
+}
+.text-color-999 {
+    font-size: 13px;
+    color: #999;
+}
+
+/* 处理登录框样式 */
+.errorstyle{
+    margin-left: 100px;
+}
+
+
+/*  处理三个span按钮   */
+.menu-my a{
+    text-decoration: none;
+    color: #999;
+}
+.menu-my a:hover{
+    color: pink;
+}
+/*  处理相关问题的样式*/
+.relateQuestion a{
+    text-decoration: none;
+    color: #999;
+}
+
+/*  处理首页下划线问题*/
+.media-body a{
+    text-decoration: none;
+}
+
+/* 处理点赞数*/
+
+.view-photo a:visited{
+    color: pink;
+}
+
+/*  通知样式处理*/
+#home a{
+    text-decoration: none;
+}

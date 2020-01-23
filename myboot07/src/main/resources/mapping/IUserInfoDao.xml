@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.example.myboot07.dao.IUserInfoDao">
+
+
+    <insert id="insertUserInfoByUserId">
+        insert into userinfo
+        (city,company,school,personalweb,intro,userid)
+        values
+        (#{userInfo.city},#{userInfo.company},#{userInfo.school},#{userInfo.personalweb},#{userInfo.intro},#{userInfo.userid});
+    </insert>
+<!-- set -->
+    <update id="updateUserInfoByUserInfo" parameterType="com.example.myboot07.bean.UserInfo">
+        UPDATE userinfo
+        <set>
+            <if test="#{userInfo.city} != null">
+                city = #{userInfo.city},
+            </if>
+            <if test="#{userInfo.company} != null">
+                company = #{userInfo.company},
+            </if>
+            <if test="#{userInfo.school} != null">
+                school = #{userInfo.school},
+            </if>
+            <if test="#{userInfo.personalweb} != null">
+                personalweb = #{userInfo.personalweb},
+            </if>
+            <if test="#{userInfo.intro} != null">
+                intro = #{userInfo.intro},
+            </if>
+
+        </set>
+        WHERE userid = #{userInfo.userid}
+    </update>
+
+    <select id="queryUserInfoByUserId" resultType="com.example.myboot07.bean.UserInfo">
+        select * from
+        userinfo
+        where
+        userid = #{userid}
+    </select>
+</mapper>
